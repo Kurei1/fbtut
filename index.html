@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dark Mode Video Page</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #0a0a0a;
+      color: #e0e0e0;
+      min-height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    html {
+      height: 100%;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 90%;
+      padding: 40px 20px;
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 40px;
+      color: #ffffff;
+    }
+
+    .video-wrapper {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #1a1a1a;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 40px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .video-wrapper video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .content-section {
+      margin-bottom: 30px;
+    }
+
+    .header {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #ffffff;
+    }
+
+    .link-container {
+      margin-bottom: 30px;
+    }
+
+    .website-link {
+      display: inline-block;
+      color: #60a5fa;
+      text-decoration: none;
+      font-size: 18px;
+      padding: 12px 24px;
+      background: #1e293b;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .website-link:hover {
+      background: #334155;
+      color: #93c5fd;
+    }
+
+    .copy-section {
+      margin-top: 40px;
+    }
+
+    .copy-box {
+      background: #1a1a1a;
+      border: 2px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 16px 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      user-select: none;
+    }
+
+    .copy-box:hover {
+      border-color: #60a5fa;
+      background: #1e1e1e;
+    }
+
+    .copy-box:active {
+      transform: scale(0.98);
+    }
+
+    .copy-text {
+      font-size: 16px;
+      color: #e0e0e0;
+      font-family: 'Courier New', monospace;
+    }
+
+    .copy-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #10b981;
+      color: white;
+      padding: 16px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .copy-notification.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 640px) {
+      .page-title {
+        font-size: 24px;
+      }
+
+      .header {
+        font-size: 20px;
+      }
+
+      .website-link {
+        font-size: 16px;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="container">
+   <h1 class="page-title" id="pageTitle">My Video Page</h1>
+   <div class="video-wrapper">
+    <video id="mainVideo" controls><source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4"> Your browser does not support the video tag.
+    </video>
+   </div>
+   <div class="content-section">
+    <h2 class="header" id="headerOne">Welcome to Our Platform</h2>
+   </div>
+   <div class="content-section">
+    <h2 class="header" id="headerTwo">Explore More Content</h2>
+   </div>
+   <div class="link-container"><a href="https://www.example.com" target="_blank" rel="noopener noreferrer" class="website-link" id="websiteLink">Visit Our Website</a>
+   </div>
+   <div class="copy-section">
+    <div class="copy-box" id="copyBox">
+     <p class="copy-text" id="copyText">Click here to copy this text</p>
+    </div>
+   </div>
+  </div>
+  <div class="copy-notification" id="notification">
+   Text Copied!
+  </div>
+  <script>
+    const defaultConfig = {
+      page_title: "My Video Page",
+      video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      header_one: "Welcome to Our Platform",
+      header_two: "Explore More Content",
+      website_link: "https://www.example.com",
+      link_text: "Visit Our Website",
+      copyable_text: "Click here to copy this text",
+      background_color: "#0a0a0a",
+      surface_color: "#1a1a1a",
+      text_color: "#e0e0e0",
+      link_color: "#60a5fa",
+      accent_color: "#10b981",
+      font_family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif",
+      font_size: 16
+    };
+
+    async function onConfigChange(config) {
+      const pageTitle = document.getElementById('pageTitle');
+      const mainVideo = document.getElementById('mainVideo');
+      const headerOne = document.getElementById('headerOne');
+      const headerTwo = document.getElementById('headerTwo');
+      const websiteLink = document.getElementById('websiteLink');
+      const copyText = document.getElementById('copyText');
+
+      pageTitle.textContent = config.page_title || defaultConfig.page_title;
+      mainVideo.src = config.video_url || defaultConfig.video_url;
+      headerOne.textContent = config.header_one || defaultConfig.header_one;
+      headerTwo.textContent = config.header_two || defaultConfig.header_two;
+      websiteLink.href = config.website_link || defaultConfig.website_link;
+      websiteLink.textContent = config.link_text || defaultConfig.link_text;
+      copyText.textContent = config.copyable_text || defaultConfig.copyable_text;
+
+      const backgroundColor = config.background_color || defaultConfig.background_color;
+      const surfaceColor = config.surface_color || defaultConfig.surface_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const linkColor = config.link_color || defaultConfig.link_color;
+      const accentColor = config.accent_color || defaultConfig.accent_color;
+      const fontFamily = config.font_family || defaultConfig.font_family;
+      const fontSize = config.font_size || defaultConfig.font_size;
+
+      document.body.style.background = backgroundColor;
+      document.body.style.color = textColor;
+      document.body.style.fontFamily = `${fontFamily}, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif`;
+      document.body.style.fontSize = `${fontSize}px`;
+
+      pageTitle.style.fontSize = `${fontSize * 2}px`;
+      pageTitle.style.color = textColor;
+
+      const headers = document.querySelectorAll('.header');
+      headers.forEach(header => {
+        header.style.fontSize = `${fontSize * 1.5}px`;
+        header.style.color = textColor;
+      });
+
+      const videoWrapper = document.querySelector('.video-wrapper');
+      videoWrapper.style.background = surfaceColor;
+
+      const copyBox = document.getElementById('copyBox');
+      copyBox.style.background = surfaceColor;
+      copyBox.style.borderColor = surfaceColor;
+
+      copyText.style.color = textColor;
+      copyText.style.fontSize = `${fontSize}px`;
+
+      websiteLink.style.color = linkColor;
+      websiteLink.style.fontSize = `${fontSize * 1.125}px`;
+
+      const notification = document.getElementById('notification');
+      notification.style.background = accentColor;
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [
+          {
+            get: () => config.background_color || defaultConfig.background_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ background_color: value });
+              }
+            }
+          },
+          {
+            get: () => config.surface_color || defaultConfig.surface_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ surface_color: value });
+              }
+            }
+          },
+          {
+            get: () => config.text_color || defaultConfig.text_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            }
+          },
+          {
+            get: () => config.link_color || defaultConfig.link_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ link_color: value });
+              }
+            }
+          },
+          {
+            get: () => config.accent_color || defaultConfig.accent_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ accent_color: value });
+              }
+            }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || defaultConfig.font_family,
+          set: (value) => {
+            if (window.elementSdk) {
+              window.elementSdk.setConfig({ font_family: value });
+            }
+          }
+        },
+        fontSizeable: {
+          get: () => config.font_size || defaultConfig.font_size,
+          set: (value) => {
+            if (window.elementSdk) {
+              window.elementSdk.setConfig({ font_size: value });
+            }
+          }
+        }
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ["page_title", config.page_title || defaultConfig.page_title],
+        ["video_url", config.video_url || defaultConfig.video_url],
+        ["header_one", config.header_one || defaultConfig.header_one],
+        ["header_two", config.header_two || defaultConfig.header_two],
+        ["website_link", config.website_link || defaultConfig.website_link],
+        ["link_text", config.link_text || defaultConfig.link_text],
+        ["copyable_text", config.copyable_text || defaultConfig.copyable_text]
+      ]);
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+
+    const copyBox = document.getElementById('copyBox');
+    const copyText = document.getElementById('copyText');
+    const notification = document.getElementById('notification');
+
+    copyBox.addEventListener('click', async () => {
+      const textToCopy = copyText.textContent;
+      
+      try {
+        await navigator.clipboard.writeText(textToCopy);
+        
+        notification.classList.add('show');
+        
+        setTimeout(() => {
+          notification.classList.remove('show');
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy text');
+      }
+    });
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9996a22c0335a96f',t:'MTc2MjI4NTc1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
